@@ -6,12 +6,16 @@ import java.util.List;
 
 import javax.websocket.server.PathParam;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.entity.Account;
 import com.example.entity.Message;
@@ -22,6 +26,7 @@ import com.example.entity.Message;
  * where applicable as well as the @ResponseBody and @PathVariable annotations. You should
  * refer to prior mini-project labs and lecture materials for guidance on how a controller may be built.
  */
+@Controller
 public class SocialMediaController {
 
     /**
@@ -34,9 +39,10 @@ public class SocialMediaController {
 - If the registration is not successful for some other reason, the response status should be 400. (Client error)
  */
     @PostMapping(value= "/register")
-    public Account register(@RequestBody Account account) {
+    public @ResponseBody ResponseEntity<Account> register(@RequestBody Account account) {
         //TODO 
-        return new Account(1, "username", "password");
+        Account newAccount = new Account(1, account.getUsername(), account.getPassword());
+        return ResponseEntity.status(200).body(newAccount);
     }
 
 
@@ -46,13 +52,15 @@ public class SocialMediaController {
      * As a user, I should be able to verify my login on the endpoint POST localhost:8080/login. 
      * The request body will contain a JSON representation of an Account.
 
-- The login will be successful if and only if the username and password provided in the request body JSON match a real account existing on the database. If successful, the response body should contain a JSON of the account in the response body, including its account_id. The response status should be 200 OK, which is the default.
+- The login will be successful if and only if the username and password provided in the request body JSON 
+match a real account existing on the database. If successful, the response body should contain a JSON of the account in the response body, including its account_id. The response status should be 200 OK, which is the default.
 - If the login is not successful, the response status should be 401. (Unauthorized)
 */
     @PostMapping(value="/login")
-    public Account login(@RequestBody Account account) {
+    public @ResponseBody ResponseEntity<Account> login(@RequestBody Account account) {
         //TODO
-        return new Account(1, "username", "password");
+        Account newAccount = new Account(9999, account.getUsername(), account.getPassword());
+        return ResponseEntity.status(200).body(newAccount);
     }
 
     /**
@@ -64,9 +72,10 @@ public class SocialMediaController {
 - If the creation of the message is not successful, the response status should be 400. (Client error)
 */
     @PostMapping(value="/messages")
-    public Message postMessage(@RequestBody Message message) {
+    public @ResponseBody ResponseEntity<Message> postMessage(@RequestBody Message message) {
         //TODO
-        return new Message(Integer.valueOf(1), "text", Long.valueOf(3000));
+        Message newMessage = new Message(Integer.valueOf(1), "text", Long.valueOf(3000));
+        return ResponseEntity.status(200).body(newMessage);
     }
 
     /**
@@ -77,11 +86,11 @@ public class SocialMediaController {
 - The response body should contain a JSON representation of a list containing all messages retrieved from the database. It is expected for the list to simply be empty if there are no messages. The response status should always be 200, which is the default.
 */
     @GetMapping(value="/messages")
-    public List<Message> getMesssages() {
+    public @ResponseBody ResponseEntity<List<Message>> getMesssages() {
         //TODO
         List<Message> messages = new ArrayList<>();
         messages.add(new Message(Integer.valueOf(1), "text", Long.valueOf(3000)));
-        return messages;
+        return ResponseEntity.status(200).body(messages);
     }
 
     /**
@@ -93,9 +102,10 @@ As a user, I should be able to submit a GET request on the endpoint GET localhos
 
 */
     @GetMapping(value="/messages/{message_id}")
-    public Message getMessage(@PathVariable int message_id) {
+    public @ResponseBody ResponseEntity<Message> getMessage(@PathVariable int message_id) {
         //TODO
-        return new Message(Integer.valueOf(1), "text", Long.valueOf(3000));
+        Message newMessage = new Message(Integer.valueOf(1), "text", Long.valueOf(3000));
+        return ResponseEntity.status(200).body(newMessage);
     }
     
 
@@ -104,14 +114,15 @@ As a user, I should be able to submit a GET request on the endpoint GET localhos
 
 As a User, I should be able to submit a DELETE request on the endpoint DELETE localhost:8080/messages/{message_id}.
 
-- The deletion of an existing message should remove an existing message from the database. If the message existed, the response body should contain the number of rows updated (1). The response status should be 200, which is the default.
+- The deletion of an existing message should remove an existing message from the database. If the message existed,
+ the response body should contain the number of rows updated (1). The response status should be 200, which is the default.
 - If the message did not exist, the response status should be 200, but the response body should be empty. This is because the DELETE verb is intended to be idempotent, ie, multiple calls to the DELETE endpoint should respond with the same type of response.
 
 */
     @DeleteMapping(value="/messages/{message_id}")
-    public int deleteMessage(@PathVariable int messasge_id) {
+    public @ResponseBody ResponseEntity<Integer> deleteMessage(@PathVariable int messasge_id) {
         // TODO
-        return 1;
+        return ResponseEntity.status(200).body(1);
     }
 
     /**
@@ -123,9 +134,10 @@ As a User, I should be able to submit a DELETE request on the endpoint DELETE lo
 
 */
     @PatchMapping(value="/messages/{message_id}") 
-    public Message updateMessage(@PathVariable int message_id) {
+    public @ResponseBody ResponseEntity<Message> updateMessage(@PathVariable int message_id) {
         //TODO
-        return new Message(Integer.valueOf(1), "text", Long.valueOf(3000));
+        Message newMessage = new Message(Integer.valueOf(1), "text", Long.valueOf(3000));
+        return ResponseEntity.status(200).body(newMessage);
     }
 
     /**
@@ -137,11 +149,11 @@ As a user, I should be able to submit a GET request on the endpoint GET localhos
 
    */
     @GetMapping(value="/accounts/{account_id}/messages")
-    public List<Message> getAccountMessages(@PathVariable int account_id) {
+    public @ResponseBody ResponseEntity<List<Message>> getAccountMessages(@PathVariable int account_id) {
         //TODO
         List<Message> messages = new ArrayList<>();
         messages.add(new Message(Integer.valueOf(1), "text", Long.valueOf(3000)));
-        return messages;
+        return ResponseEntity.status(200).body(messages);
     }
 
 }
