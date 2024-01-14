@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.entity.Account;
 import com.example.entity.Message;
+import com.example.service.AccountService;
+import com.example.service.MessageService;
 
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller using Spring. The endpoints you will need can be
@@ -27,7 +29,11 @@ import com.example.entity.Message;
  * refer to prior mini-project labs and lecture materials for guidance on how a controller may be built.
  */
 @Controller
+// do I need a @RestController tag? TODO
 public class SocialMediaController {
+
+    MessageService messageService = new MessageService();
+    AccountService accountService = new AccountService();
 
     /**
      * ## 1: Our API should be able to process new User registrations.
@@ -41,7 +47,7 @@ public class SocialMediaController {
     @PostMapping(value= "/register")
     public @ResponseBody ResponseEntity<Account> register(@RequestBody Account account) {
         //TODO 
-        Account newAccount = new Account(1, account.getUsername(), account.getPassword());
+        Account newAccount = accountService.register(account);
         return ResponseEntity.status(200).body(newAccount);
     }
 
@@ -59,7 +65,7 @@ match a real account existing on the database. If successful, the response body 
     @PostMapping(value="/login")
     public @ResponseBody ResponseEntity<Account> login(@RequestBody Account account) {
         //TODO
-        Account newAccount = new Account(9999, account.getUsername(), account.getPassword());
+        Account newAccount = accountService.login(account);
         return ResponseEntity.status(200).body(newAccount);
     }
 
@@ -74,7 +80,7 @@ match a real account existing on the database. If successful, the response body 
     @PostMapping(value="/messages")
     public @ResponseBody ResponseEntity<Message> postMessage(@RequestBody Message message) {
         //TODO
-        Message newMessage = new Message(Integer.valueOf(1), "text", Long.valueOf(3000));
+        Message newMessage = messageService.postMessage(message);
         return ResponseEntity.status(200).body(newMessage);
     }
 
@@ -88,8 +94,7 @@ match a real account existing on the database. If successful, the response body 
     @GetMapping(value="/messages")
     public @ResponseBody ResponseEntity<List<Message>> getMesssages() {
         //TODO
-        List<Message> messages = new ArrayList<>();
-        messages.add(new Message(Integer.valueOf(1), "text", Long.valueOf(3000)));
+        List<Message> messages = messageService.getMesssages();
         return ResponseEntity.status(200).body(messages);
     }
 
@@ -104,7 +109,7 @@ As a user, I should be able to submit a GET request on the endpoint GET localhos
     @GetMapping(value="/messages/{message_id}")
     public @ResponseBody ResponseEntity<Message> getMessage(@PathVariable int message_id) {
         //TODO
-        Message newMessage = new Message(Integer.valueOf(1), "text", Long.valueOf(3000));
+        Message newMessage = messageService.getMessage(message_id);
         return ResponseEntity.status(200).body(newMessage);
     }
     
@@ -122,6 +127,7 @@ As a User, I should be able to submit a DELETE request on the endpoint DELETE lo
     @DeleteMapping(value="/messages/{message_id}")
     public @ResponseBody ResponseEntity<Integer> deleteMessage(@PathVariable int messasge_id) {
         // TODO
+        int retVal = messageService.deleteMessage(messasge_id);
         return ResponseEntity.status(200).body(1);
     }
 
@@ -136,7 +142,7 @@ As a User, I should be able to submit a DELETE request on the endpoint DELETE lo
     @PatchMapping(value="/messages/{message_id}") 
     public @ResponseBody ResponseEntity<Message> updateMessage(@PathVariable int message_id) {
         //TODO
-        Message newMessage = new Message(Integer.valueOf(1), "text", Long.valueOf(3000));
+        Message newMessage = messageService.updateMessage(message_id);
         return ResponseEntity.status(200).body(newMessage);
     }
 
@@ -151,8 +157,7 @@ As a user, I should be able to submit a GET request on the endpoint GET localhos
     @GetMapping(value="/accounts/{account_id}/messages")
     public @ResponseBody ResponseEntity<List<Message>> getAccountMessages(@PathVariable int account_id) {
         //TODO
-        List<Message> messages = new ArrayList<>();
-        messages.add(new Message(Integer.valueOf(1), "text", Long.valueOf(3000)));
+        List<Message> messages = messageService.getAccountMessages(account_id);
         return ResponseEntity.status(200).body(messages);
     }
 
