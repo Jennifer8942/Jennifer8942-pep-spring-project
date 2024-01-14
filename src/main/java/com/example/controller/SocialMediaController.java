@@ -1,5 +1,7 @@
 package com.example.controller;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.websocket.server.PathParam;
@@ -34,7 +36,7 @@ public class SocialMediaController {
     @PostMapping(value= "/register")
     public Account register(@RequestBody Account account) {
         //TODO 
-        return null;
+        return new Account(1, "username", "password");
     }
 
 
@@ -50,7 +52,7 @@ public class SocialMediaController {
     @PostMapping(value="/login")
     public Account login(@RequestBody Account account) {
         //TODO
-        return null;
+        return new Account(1, "username", "password");
     }
 
     /**
@@ -64,7 +66,7 @@ public class SocialMediaController {
     @PostMapping(value="/messages")
     public Message postMessage(@RequestBody Message message) {
         //TODO
-        return null;
+        return new Message(Integer.valueOf(1), "text", Long.valueOf(3000));
     }
 
     /**
@@ -77,7 +79,9 @@ public class SocialMediaController {
     @GetMapping(value="/messages")
     public List<Message> getMesssages() {
         //TODO
-        return null;
+        List<Message> messages = new ArrayList<>();
+        messages.add(new Message(Integer.valueOf(1), "text", Long.valueOf(3000)));
+        return messages;
     }
 
     /**
@@ -91,7 +95,7 @@ As a user, I should be able to submit a GET request on the endpoint GET localhos
     @GetMapping(value="/messages/{message_id}")
     public Message getMessage(@PathVariable int message_id) {
         //TODO
-        return null;
+        return new Message(Integer.valueOf(1), "text", Long.valueOf(3000));
     }
     
 
@@ -107,7 +111,7 @@ As a User, I should be able to submit a DELETE request on the endpoint DELETE lo
     @DeleteMapping(value="/messages/{message_id}")
     public int deleteMessage(@PathVariable int messasge_id) {
         // TODO
-        return 0;
+        return 1;
     }
 
     /**
@@ -121,7 +125,7 @@ As a User, I should be able to submit a DELETE request on the endpoint DELETE lo
     @PatchMapping(value="/messages/{message_id}") 
     public Message updateMessage(@PathVariable int message_id) {
         //TODO
-        return null;
+        return new Message(Integer.valueOf(1), "text", Long.valueOf(3000));
     }
 
     /**
@@ -135,7 +139,9 @@ As a user, I should be able to submit a GET request on the endpoint GET localhos
     @GetMapping(value="/accounts/{account_id}/messages")
     public List<Message> getAccountMessages(@PathVariable int account_id) {
         //TODO
-        return null;
+        List<Message> messages = new ArrayList<>();
+        messages.add(new Message(Integer.valueOf(1), "text", Long.valueOf(3000)));
+        return messages;
     }
 
 }
