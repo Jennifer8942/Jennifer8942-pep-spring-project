@@ -30,7 +30,7 @@ public class AccountService {
         //TODO 
         if(account == null || account.getUsername() == null || account.getPassword() == null
             || account.getUsername().length() < 1 || account.getUsername().length() > 255
-            || account.getPassword().length() < 4) || account.getPassword().length() > 255)
+            || account.getPassword().length() < 4 || account.getPassword().length() > 255)
         {
             throw new RuntimeException("User input error");
         }

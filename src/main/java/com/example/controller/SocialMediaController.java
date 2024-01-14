@@ -32,8 +32,8 @@ import com.example.service.MessageService;
 // do I need a @RestController tag? TODO
 public class SocialMediaController {
 
-    MessageService messageService = new MessageService();
-    AccountService accountService = new AccountService();
+    MessageService messageService;
+    AccountService accountService;
 
     /**
      * ## 1: Our API should be able to process new User registrations.
