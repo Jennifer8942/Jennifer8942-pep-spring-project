@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.entity.Account;
 import com.example.entity.Message;
+import com.example.exception.DataConflictException;
+import com.example.exception.InvalidInputException;
 import com.example.service.AccountService;
 import com.example.service.MessageService;
 
@@ -51,9 +53,16 @@ public class SocialMediaController {
  */
     @PostMapping(value= "/register")
     public @ResponseBody ResponseEntity<Account> register(@RequestBody Account account) {
-        //TODO 
-        Account newAccount = accountService.register(account);
-        return ResponseEntity.status(200).body(newAccount);
+        try {
+            Account newAccount = accountService.register(account);
+            return ResponseEntity.status(200).body(newAccount);
+        }
+        catch(InvalidInputException e) {
+            return ResponseEntity.status(400).build();
+        }
+        catch(DataConflictException e) {
+            return ResponseEntity.status(409).build();
+        }
     }
 
 

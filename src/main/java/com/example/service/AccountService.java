@@ -36,11 +36,14 @@ public class AccountService {
         {
             throw new InvalidInputException();
         }
-       // TODO accountRepository.findByUsername(account.getUsername());
-       // throw new DataConflictException
+       // TODO 
+       Account test = accountRepository.findByUsername(account.getUsername());
+       if(test != null) {
+        throw new DataConflictException();
+       }
         //Account newAccount = accountRepository.createAccount(account.getUsername(), account.getPassword());
-        accountRepository.save(account);
-        return account;
+        Account newAccount = accountRepository.save(account);
+        return newAccount;
     }
 
 
