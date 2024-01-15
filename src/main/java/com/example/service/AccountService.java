@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.entity.Account;
+import com.example.exception.DataConflictException;
 import com.example.exception.InvalidInputException;
 import com.example.repository.AccountRepository;
 
@@ -27,7 +28,7 @@ public class AccountService {
     - If the registration is not successful due to a duplicate username, the response status should be 409. (Conflict)
     - If the registration is not successful for some other reason, the response status should be 400. (Client error)
     */
-    public Account register(Account account) throws InvalidInputException {
+    public Account register(Account account) throws InvalidInputException, DataConflictException {
         //TODO 
         if(account == null || account.getUsername() == null || account.getPassword() == null
             || account.getUsername().length() < 1 || account.getUsername().length() > 255
@@ -35,8 +36,11 @@ public class AccountService {
         {
             throw new InvalidInputException();
         }
-        Account newAccount = new Account(1, account.getUsername(), account.getPassword());
-        return newAccount;
+       // TODO accountRepository.findByUsername(account.getUsername());
+       // throw new DataConflictException
+        //Account newAccount = accountRepository.createAccount(account.getUsername(), account.getPassword());
+        accountRepository.save(account);
+        return account;
     }
 
 

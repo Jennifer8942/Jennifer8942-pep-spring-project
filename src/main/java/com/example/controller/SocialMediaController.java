@@ -35,6 +35,11 @@ public class SocialMediaController {
     MessageService messageService;
     AccountService accountService;
 
+    public SocialMediaController(MessageService messageService, AccountService accountService) {
+        this.messageService = messageService;
+        this.accountService = accountService;
+    }
+
     /**
      * ## 1: Our API should be able to process new User registrations.
      * As a user, I should be able to create a new Account on the endpoint POST localhost:8080/register. 
