@@ -43,25 +43,34 @@ public class SocialMediaController {
     }
 
     /**
-     * ## 1: Our API should be able to process new User registrations.
+     * Process new User registrations.
      * As a user, I should be able to create a new Account on the endpoint POST localhost:8080/register. 
-     * The body will contain a representation of a JSON Account, but will not contain an account_id.
-
-- The registration will be successful if and only if the username is not blank, the password is at least 4 characters long, and an Account with that username does not already exist. If all these conditions are met, the response body should contain a JSON of the Account, including its account_id. The response status should be 200 OK, which is the default. The new account should be persisted to the database.
-- If the registration is not successful due to a duplicate username, the response status should be 409. (Conflict)
-- If the registration is not successful for some other reason, the response status should be 400. (Client error)
- */
+     * The registration will be successful if and only if the username is not blank, the password is at least 
+     * 4 characters long, and an Account with that username does not already exist. 
+     * 
+     * @param account The Account object created from the request body which will contain a representation of a JSON 
+     *                Account, but will not contain an account_id.
+     * @return ResponseEntity  
+     *  -If all conditions are met, the response body should contain a JSON of the Account, including 
+     *   its account_id. The response status should be 200 OK, which is the default. The new account should 
+     *   be persisted to the database.
+     * - If the registration is not successful due to a duplicate username, the response status should be 409. (Conflict)
+     * - If the registration is not successful for some other reason, the response status should be 400. (Client error)
+     */
     @PostMapping(value= "/register")
     public @ResponseBody ResponseEntity<Account> register(@RequestBody Account account) {
         try {
             Account newAccount = accountService.register(account);
             return ResponseEntity.status(200).body(newAccount);
         }
+        catch(DataConflictException e) {
+            return ResponseEntity.status(409).build();
+        }
         catch(InvalidInputException e) {
             return ResponseEntity.status(400).build();
         }
-        catch(DataConflictException e) {
-            return ResponseEntity.status(409).build();
+        catch(RuntimeException e) {
+            return ResponseEntity.status(400).build();
         }
     }
 
@@ -79,8 +88,13 @@ match a real account existing on the database. If successful, the response body 
     @PostMapping(value="/login")
     public @ResponseBody ResponseEntity<Account> login(@RequestBody Account account) {
         //TODO
-        Account newAccount = accountService.login(account);
-        return ResponseEntity.status(200).body(newAccount);
+        try {
+            Account newAccount = accountService.login(account);
+            return ResponseEntity.status(200).body(newAccount);
+        }
+        catch(RuntimeException e) {
+            return ResponseEntity.status(401).build();
+        }
     }
 
     /**
@@ -94,8 +108,13 @@ match a real account existing on the database. If successful, the response body 
     @PostMapping(value="/messages")
     public @ResponseBody ResponseEntity<Message> postMessage(@RequestBody Message message) {
         //TODO
-        Message newMessage = messageService.postMessage(message);
-        return ResponseEntity.status(200).body(newMessage);
+        try {
+            Message newMessage = messageService.postMessage(message);
+            return ResponseEntity.status(200).body(newMessage);
+        } 
+        catch(RuntimeException e) {
+            return ResponseEntity.status(400).build();
+        }
     }
 
     /**
@@ -103,7 +122,8 @@ match a real account existing on the database. If successful, the response body 
      * 
      * As a user, I should be able to submit a GET request on the endpoint GET localhost:8080/messages.
 
-- The response body should contain a JSON representation of a list containing all messages retrieved from the database. It is expected for the list to simply be empty if there are no messages. The response status should always be 200, which is the default.
+- The response body should contain a JSON representation of a list containing all messages retrieved from the database. 
+It is expected for the list to simply be empty if there are no messages. The response status should always be 200, which is the default.
 */
     @GetMapping(value="/messages")
     public @ResponseBody ResponseEntity<List<Message>> getMesssages() {
@@ -117,7 +137,8 @@ match a real account existing on the database. If successful, the response body 
 
 As a user, I should be able to submit a GET request on the endpoint GET localhost:8080/messages/{message_id}.
 
-- The response body should contain a JSON representation of the message identified by the message_id. It is expected for the response body to simply be empty if there is no such message. The response status should always be 200, which is the default.
+- The response body should contain a JSON representation of the message identified by the message_id. It is expected for 
+the response body to simply be empty if there is no such message. The response status should always be 200, which is the default.
 
 */
     @GetMapping(value="/messages/{message_id}")
@@ -135,7 +156,8 @@ As a User, I should be able to submit a DELETE request on the endpoint DELETE lo
 
 - The deletion of an existing message should remove an existing message from the database. If the message existed,
  the response body should contain the number of rows updated (1). The response status should be 200, which is the default.
-- If the message did not exist, the response status should be 200, but the response body should be empty. This is because the DELETE verb is intended to be idempotent, ie, multiple calls to the DELETE endpoint should respond with the same type of response.
+- If the message did not exist, the response status should be 200, but the response body should be empty. 
+This is because the DELETE verb is intended to be idempotent, ie, multiple calls to the DELETE endpoint should respond with the same type of response.
 
 */
     @DeleteMapping(value="/messages/{message_id}")
@@ -163,8 +185,13 @@ As a User, I should be able to submit a DELETE request on the endpoint DELETE lo
     @PatchMapping(value="/messages/{message_id}") 
     public @ResponseBody ResponseEntity<Message> updateMessage(@PathVariable int message_id) {
         //TODO
-        Message newMessage = messageService.updateMessage(message_id);
-        return ResponseEntity.status(200).body(newMessage);
+        try {
+            Message newMessage = messageService.updateMessage(message_id);
+            return ResponseEntity.status(200).body(newMessage);
+        }
+        catch(RuntimeException e) {
+            return ResponseEntity.status(400).build();
+        }
     }
 
     /**
@@ -172,7 +199,8 @@ As a User, I should be able to submit a DELETE request on the endpoint DELETE lo
 
 As a user, I should be able to submit a GET request on the endpoint GET localhost:8080/accounts/{account_id}/messages.
 
-- The response body should contain a JSON representation of a list containing all messages posted by a particular user, which is retrieved from the database. It is expected for the list to simply be empty if there are no messages. The response status should always be 200, which is the default.
+- The response body should contain a JSON representation of a list containing all messages posted by a particular user, 
+which is retrieved from the database. It is expected for the list to simply be empty if there are no messages. The response status should always be 200, which is the default.
 
    */
     @GetMapping(value="/accounts/{account_id}/messages")

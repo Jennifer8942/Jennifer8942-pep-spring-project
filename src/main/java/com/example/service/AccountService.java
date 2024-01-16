@@ -29,14 +29,14 @@ public class AccountService {
     - If the registration is not successful for some other reason, the response status should be 400. (Client error)
     */
     public Account register(Account account) throws InvalidInputException, DataConflictException {
-        //TODO 
+        // validate input
         if(account == null || account.getUsername() == null || account.getPassword() == null
             || account.getUsername().length() < 1 || account.getUsername().length() > 255
             || account.getPassword().length() < 4 || account.getPassword().length() > 255)
         {
             throw new InvalidInputException();
         }
-       // TODO 
+       // check for data conflict 
        Account test = accountRepository.findByUsername(account.getUsername());
        if(test != null) {
         throw new DataConflictException();
@@ -45,7 +45,6 @@ public class AccountService {
         Account newAccount = accountRepository.save(account);
         return newAccount;
     }
-
 
     /**
      * ## 2: Our API should be able to process User logins.
@@ -59,7 +58,13 @@ public class AccountService {
     */
     public Account login(Account account) {
         //TODO
-        Account newAccount = new Account(9999, account.getUsername(), account.getPassword());
-        return newAccount;
+        Account newAccount = accountRepository.findByUsername(account.getUsername());
+        if(newAccount != null && newAccount.getPassword() != null 
+            && newAccount.getPassword().equals(account.getPassword())) {
+            return newAccount;
+        }
+        else {
+            throw new InvalidInputException();
+        }
     }
 }
