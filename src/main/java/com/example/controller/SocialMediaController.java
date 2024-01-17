@@ -111,13 +111,18 @@ and posted_by refers to a real, existing user. If successful, the response body 
     @PostMapping(value="/messages")
     public @ResponseBody ResponseEntity<Message> postMessage(@RequestBody Message message) {
         //TODO
-        if(message != null){
-        System.out.println("postMessage" + message);}
-        try {
-            Message newMessage = messageService.postMessage(message);
-            return ResponseEntity.status(200).body(newMessage);
-        } 
-        catch(RuntimeException e) {
+        if(message != null){ 
+            //System.out.println("postMessage" + message);
+
+            try {
+                Message newMessage = messageService.postMessage(message);
+                return ResponseEntity.status(200).body(newMessage);
+            } 
+            catch(RuntimeException e) {
+                return ResponseEntity.status(400).build();
+            }
+        }
+        else {
             return ResponseEntity.status(400).build();
         }
     }
@@ -194,7 +199,7 @@ This is because the DELETE verb is intended to be idempotent, ie, multiple calls
      * @return Message
      */
     @PatchMapping(value="/messages/{message_id}") 
-    public @ResponseBody ResponseEntity<Integer> updateMessage(@PathVariable int message_id, @RequestBody String message_text) {
+    public @ResponseBody ResponseEntity<Integer> updateMessage(@PathVariable Integer message_id, @RequestBody String message_text) {
         //TODO
         String json = "{\"message_text\": \"\"}";
         try {

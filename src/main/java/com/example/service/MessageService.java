@@ -36,8 +36,9 @@ public class MessageService {
     */
     public Message postMessage(Message message) throws InvalidInputException{
         //TODO
-       /*if(message != null && message.getMessage_text() != null && message.getMessage_text().length() <= 255 
-        && message.getPosted_by() != null) {
+        if(message != null && message.getMessage_text() != null && message.getPosted_by() != null
+            && message.getMessage_text().length() <= 255 && message.getMessage_text().length() > 0) 
+        {
             boolean postedByExists = accountRepositry.existsById(message.getPosted_by());
             if(postedByExists) {
                 Message newMessage = messageRepository.save(message);
@@ -45,8 +46,8 @@ public class MessageService {
             }
             else { throw new InvalidInputException(); }
        }
-       else { throw new InvalidInputException(); }*/
-       return new Message(Integer.valueOf(1), "text", Long.valueOf(3000));
+       else { throw new InvalidInputException(); }
+      // return new Message(Integer.valueOf(1), "text", Long.valueOf(3000));
     }
 
     /**
@@ -113,7 +114,7 @@ public class MessageService {
      * @param message_text
      * @return Integer the number of rows updated (0 or 1)
      */
-    public Integer updateMessage(int message_id, String message_text) throws InvalidInputException {
+    public Integer updateMessage(Integer message_id, String message_text) throws InvalidInputException {
         //TODO
         Message message = messageRepository.getById(message_id);
         if(message != null && message_text != null && message_text.length() <= 255 && message_text.length() > 0) {
