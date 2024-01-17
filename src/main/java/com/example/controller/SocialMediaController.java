@@ -31,7 +31,6 @@ import com.example.service.MessageService;
  * refer to prior mini-project labs and lecture materials for guidance on how a controller may be built.
  */
 @Controller
-// do I need a @RestController tag? TODO
 public class SocialMediaController {
 
     MessageService messageService;
@@ -183,10 +182,10 @@ This is because the DELETE verb is intended to be idempotent, ie, multiple calls
      * @return Message
      */
     @PatchMapping(value="/messages/{message_id}") 
-    public @ResponseBody ResponseEntity<Message> updateMessage(@PathVariable int message_id) {
+    public @ResponseBody ResponseEntity<Message> updateMessage(@PathVariable int message_id, @RequestBody String message_text) {
         //TODO
         try {
-            Message newMessage = messageService.updateMessage(message_id);
+            Message newMessage = messageService.updateMessage(message_id, message_text);
             return ResponseEntity.status(200).body(newMessage);
         }
         catch(RuntimeException e) {

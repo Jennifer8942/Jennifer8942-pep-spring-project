@@ -2,11 +2,13 @@ package com.example.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.entity.Message;
+import com.example.exception.InvalidInputException;
 import com.example.repository.MessageRepository;
 
 @Service
@@ -30,8 +32,9 @@ public class MessageService {
     public Message postMessage(Message message) {
         //TODO
         //Message newMessage = new Message(1, message.getMessage_text(), message.getTime_posted_epoch());
-        message.setMessage_id(1);
-        return message;
+       // message.setMessage_id(1);
+        Message newMessage = messageRepository.save(message);
+        return newMessage;
     }
 
     /**
@@ -43,9 +46,9 @@ public class MessageService {
     */
     public List<Message> getMesssages() {
         //TODO
-        List<Message> messages = new ArrayList<>();
-        messages.add(new Message(Integer.valueOf(1), "text", Long.valueOf(3000)));
-        return messages;
+        //List<Message> messages = new ArrayList<>();
+        //messages.add(new Message(Integer.valueOf(1), "text", Long.valueOf(3000)));
+        return messageRepository.findAll();
     }
 
     /**
@@ -53,13 +56,19 @@ public class MessageService {
 
     As a user, I should be able to submit a GET request on the endpoint GET localhost:8080/messages/{message_id}.
 
-    - The response body should contain a JSON representation of the message identified by the message_id. It is expected for the response body to simply be empty if there is no such message. The response status should always be 200, which is the default.
+    - The response body should contain a JSON representation of the message identified by the message_id. It is expected for 
+    the response body to simply be empty if there is no such message. The response status should always be 200, which is the default.
 
     */
     public Message getMessage(int message_id) {
         //TODO
-        Message newMessage = new Message(Integer.valueOf(1), "text", Long.valueOf(3000));
-        return newMessage;
+        Optional<Message> messageO = messageRepository.findById(message_id);
+        if(messageO.isPresent()) {
+            return messageO.get();
+        }
+        else {
+            return null;
+        }
     }
 
 
@@ -75,7 +84,11 @@ public class MessageService {
     */
     public Integer deleteMessage(int messasge_id) {
         // TODO
-        return 1;
+        if(messageRepository.existsById(messasge_id)) {
+            messageRepository.deleteById(messasge_id);
+            return 1;
+        }
+        return 0;
     }
 
     /**
@@ -86,10 +99,18 @@ public class MessageService {
     - If the update of the message is not successful for any reason, the response status should be 400. (Client error)
 
     */
-    public Message updateMessage(int message_id) {
+    public Message updateMessage(int message_id, String message_text) throws InvalidInputException{
         //TODO
-        Message newMessage = new Message(Integer.valueOf(1), "text", Long.valueOf(3000));
-        return newMessage;
+        Message message = messageRepository.getById(message_id);
+        if(message != null) {
+            message.setMessage_text(message_text);
+            messageRepository.save(message);
+            Message newMessage = messageRepository.save(message);
+            return newMessage;
+        }
+        else {
+            throw new InvalidInputException();
+        }
     }
 
     /**
@@ -102,8 +123,7 @@ public class MessageService {
     */
     public List<Message> getAccountMessages(int account_id) {
         //TODO
-        List<Message> messages = new ArrayList<>();
-        messages.add(new Message(Integer.valueOf(1), "text", Long.valueOf(3000)));
+        List<Message> messages = messageRepository.findAllMessagesByPostedBy(account_id);
         return messages;
     }
 }
