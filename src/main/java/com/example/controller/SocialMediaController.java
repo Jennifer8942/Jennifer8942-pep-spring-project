@@ -100,14 +100,19 @@ match a real account existing on the database. If successful, the response body 
     /**
      * ## 3: Our API should be able to process the creation of new messages.
      * 
-     * As a user, I should be able to submit a new post on the endpoint POST localhost:8080/messages. The request body will contain a JSON representation of a message, which should be persisted to the database, but will not contain a message_id.
+     * As a user, I should be able to submit a new post on the endpoint POST localhost:8080/messages. 
+     * The request body will contain a JSON representation of a message, which should be persisted to the database, 
+     * but will not contain a message_id.
 
-- The creation of the message will be successful if and only if the message_text is not blank, is not over 255 characters, and posted_by refers to a real, existing user. If successful, the response body should contain a JSON of the message, including its message_id. The response status should be 200, which is the default. The new message should be persisted to the database.
+- The creation of the message will be successful if and only if the message_text is not blank, is not over 255 characters, 
+and posted_by refers to a real, existing user. If successful, the response body should contain a JSON of the message, including its message_id. The response status should be 200, which is the default. The new message should be persisted to the database.
 - If the creation of the message is not successful, the response status should be 400. (Client error)
 */
     @PostMapping(value="/messages")
     public @ResponseBody ResponseEntity<Message> postMessage(@RequestBody Message message) {
         //TODO
+        if(message != null){
+        System.out.println("postMessage" + message);}
         try {
             Message newMessage = messageService.postMessage(message);
             return ResponseEntity.status(200).body(newMessage);
@@ -189,11 +194,12 @@ This is because the DELETE verb is intended to be idempotent, ie, multiple calls
      * @return Message
      */
     @PatchMapping(value="/messages/{message_id}") 
-    public @ResponseBody ResponseEntity<Message> updateMessage(@PathVariable int message_id, @RequestBody String message_text) {
+    public @ResponseBody ResponseEntity<Integer> updateMessage(@PathVariable int message_id, @RequestBody String message_text) {
         //TODO
+        String json = "{\"message_text\": \"\"}";
         try {
-            Message newMessage = messageService.updateMessage(message_id, message_text);
-            return ResponseEntity.status(200).body(newMessage);
+            Integer rows = messageService.updateMessage(message_id, message_text);
+            return ResponseEntity.status(200).body(rows);
         }
         catch(RuntimeException e) {
             return ResponseEntity.status(400).build();
