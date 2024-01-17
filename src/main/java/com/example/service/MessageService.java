@@ -9,12 +9,14 @@ import org.springframework.stereotype.Service;
 
 import com.example.entity.Message;
 import com.example.exception.InvalidInputException;
+import com.example.repository.AccountRepository;
 import com.example.repository.MessageRepository;
 
 @Service
 public class MessageService {
 
     private MessageRepository messageRepository;
+    private AccountRepository accountRepositry;
 
     @Autowired
     public MessageService(MessageRepository messageRepository) {
@@ -26,15 +28,21 @@ public class MessageService {
      * 
      * As a user, I should be able to submit a new post on the endpoint POST localhost:8080/messages. The request body will contain a JSON representation of a message, which should be persisted to the database, but will not contain a message_id.
 
-    - The creation of the message will be successful if and only if the message_text is not blank, is not over 255 characters, and posted_by refers to a real, existing user. If successful, the response body should contain a JSON of the message, including its message_id. The response status should be 200, which is the default. The new message should be persisted to the database.
+    - The creation of the message will be successful if and only if the message_text is not blank, is not over 255 characters, 
+    and posted_by refers to a real, existing user. If successful, the response body should contain a JSON of the message, including its message_id. The response status should be 200, which is the default. The new message should be persisted to the database.
     - If the creation of the message is not successful, the response status should be 400. (Client error)
     */
-    public Message postMessage(Message message) {
+    public Message postMessage(Message message) throws InvalidInputException{
         //TODO
-        //Message newMessage = new Message(1, message.getMessage_text(), message.getTime_posted_epoch());
-       // message.setMessage_id(1);
-        Message newMessage = messageRepository.save(message);
-        return newMessage;
+       if(message != null && message.getMessage_text() != null && message.getMessage_text().length() <= 255) {
+        boolean postedByExists = accountRepositry.existsById(message.getPosted_by());
+        if(postedByExists) {
+            Message newMessage = messageRepository.save(message);
+            return newMessage;
+        }
+        else { throw new InvalidInputException(); }
+       }
+       else { throw new InvalidInputException();        }
     }
 
     /**
@@ -93,16 +101,18 @@ public class MessageService {
 
     /**
      * ## 7: Our API should be able to update a message text identified by a message ID.
-     * As a user, I should be able to submit a PATCH request on the endpoint PATCH localhost:8080/messages/{message_id}. The request body should contain a new message_text values to replace the message identified by message_id. The request body can not be guaranteed to contain any other information.
-
-    - The update of a message should be successful if and only if the message id already exists and the new message_text is not blank and is not over 255 characters. If the update is successful, the response body should contain the number of rows updated (1), and the response status should be 200, which is the default. The message existing on the database should have the updated message_text.
-    - If the update of the message is not successful for any reason, the response status should be 400. (Client error)
-
-    */
+     * 
+     * The update of a message should be successful if and only if the message id already exists and the 
+     * new message_text is not blank and is not over 255 characters. 
+     * 
+     * @param message_id
+     * @param message_text
+     * @return Message
+     */
     public Message updateMessage(int message_id, String message_text) throws InvalidInputException{
         //TODO
         Message message = messageRepository.getById(message_id);
-        if(message != null) {
+        if(message_text != null && message_text.length() <= 255 && message != null) {
             message.setMessage_text(message_text);
             messageRepository.save(message);
             Message newMessage = messageRepository.save(message);

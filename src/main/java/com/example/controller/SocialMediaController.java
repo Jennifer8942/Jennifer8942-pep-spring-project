@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.websocket.server.PathParam;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -150,8 +151,8 @@ the response body to simply be empty if there is no such message. The response s
 
     /**
      * ## 6: Our API should be able to delete a message identified by a message ID.
-
-As a User, I should be able to submit a DELETE request on the endpoint DELETE localhost:8080/messages/{message_id}.
+     * 
+     * As a User, I should be able to submit a DELETE request on the endpoint DELETE localhost:8080/messages/{message_id}.
 
 - The deletion of an existing message should remove an existing message from the database. If the message existed,
  the response body should contain the number of rows updated (1). The response status should be 200, which is the default.
@@ -163,7 +164,13 @@ This is because the DELETE verb is intended to be idempotent, ie, multiple calls
     public @ResponseBody ResponseEntity<Integer> deleteMessage(@PathVariable int messasge_id) {
         // TODO
         int retVal = messageService.deleteMessage(messasge_id);
-        return ResponseEntity.status(200).body(1);
+        if(retVal == 1) {
+            return ResponseEntity.status(200).body(1);
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        }
+        
     }
 
     /**
