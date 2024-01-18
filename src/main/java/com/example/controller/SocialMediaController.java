@@ -3,6 +3,7 @@ package com.example.controller;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.websocket.server.PathParam;
 
@@ -112,8 +113,6 @@ and posted_by refers to a real, existing user. If successful, the response body 
     public @ResponseBody ResponseEntity<Message> postMessage(@RequestBody Message message) {
         //TODO
         if(message != null){ 
-            //System.out.println("postMessage" + message);
-
             try {
                 Message newMessage = messageService.postMessage(message);
                 return ResponseEntity.status(200).body(newMessage);
@@ -171,14 +170,14 @@ This is because the DELETE verb is intended to be idempotent, ie, multiple calls
 
 */
     @DeleteMapping(value="/messages/{message_id}")
-    public @ResponseBody ResponseEntity<Integer> deleteMessage(@PathVariable int messasge_id) {
+    public @ResponseBody ResponseEntity<Integer> deleteMessage(@PathVariable Integer message_id) {
         // TODO
-        int retVal = messageService.deleteMessage(messasge_id);
+        int retVal = messageService.deleteMessage(message_id);
         if(retVal == 1) {
             return ResponseEntity.status(200).body(1);
         }
         else {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+            return ResponseEntity.status(200).build();
         }
         
     }
@@ -199,11 +198,14 @@ This is because the DELETE verb is intended to be idempotent, ie, multiple calls
      * @return Message
      */
     @PatchMapping(value="/messages/{message_id}") 
-    public @ResponseBody ResponseEntity<Integer> updateMessage(@PathVariable Integer message_id, @RequestBody String message_text) {
+    public @ResponseBody ResponseEntity<Integer> updateMessage(@PathVariable Integer message_id, @RequestBody Map message_text) {
         //TODO
-        String json = "{\"message_text\": \"\"}";
+        String text = null;
+        if(message_text != null) {
+            text = (String) message_text.get("message_text");
+        }
         try {
-            Integer rows = messageService.updateMessage(message_id, message_text);
+            Integer rows = messageService.updateMessage(message_id, text);
             return ResponseEntity.status(200).body(rows);
         }
         catch(RuntimeException e) {

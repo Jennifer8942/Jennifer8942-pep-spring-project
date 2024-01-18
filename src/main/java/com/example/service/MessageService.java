@@ -39,15 +39,13 @@ public class MessageService {
         if(message != null && message.getMessage_text() != null && message.getPosted_by() != null
             && message.getMessage_text().length() <= 255 && message.getMessage_text().length() > 0) 
         {
-            boolean postedByExists = accountRepositry.existsById(message.getPosted_by());
-            if(postedByExists) {
-                Message newMessage = messageRepository.save(message);
-                return newMessage;
-            }
-            else { throw new InvalidInputException(); }
-       }
-       else { throw new InvalidInputException(); }
-      // return new Message(Integer.valueOf(1), "text", Long.valueOf(3000));
+            Message newMessage = messageRepository.save(message);
+            System.out.println(newMessage);
+            return newMessage;
+        }
+        else { 
+            throw new InvalidInputException(); 
+        }
     }
 
     /**
@@ -95,10 +93,10 @@ public class MessageService {
     - If the message did not exist, the response status should be 200, but the response body should be empty. This is because the DELETE verb is intended to be idempotent, ie, multiple calls to the DELETE endpoint should respond with the same type of response.
 
     */
-    public Integer deleteMessage(int messasge_id) {
+    public Integer deleteMessage(Integer message_id) {
         // TODO
-        if(messageRepository.existsById(messasge_id)) {
-            messageRepository.deleteById(messasge_id);
+        if(messageRepository.existsById(message_id)) {
+            messageRepository.deleteById(message_id);
             return 1;
         }
         return 0;
@@ -116,10 +114,12 @@ public class MessageService {
      */
     public Integer updateMessage(Integer message_id, String message_text) throws InvalidInputException {
         //TODO
+        System.out.println("^^^^^^^^^^^^^ message_text: " + message_text + "length: " + message_text.length());
         Message message = messageRepository.getById(message_id);
         if(message != null && message_text != null && message_text.length() <= 255 && message_text.length() > 0) {
             message.setMessage_text(message_text);
             messageRepository.save(message);
+            System.out.print("update message: " + message);
             return Integer.valueOf(1);
         }
         else {
