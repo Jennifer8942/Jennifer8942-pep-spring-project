@@ -57,7 +57,6 @@ public class AccountService {
     - If the login is not successful, the response status should be 401. (Unauthorized)
     */
     public Account login(Account account) {
-        //TODO
         Account newAccount = accountRepository.findByUsername(account.getUsername());
         if(newAccount != null && newAccount.getPassword() != null 
             && newAccount.getPassword().equals(account.getPassword())) {
