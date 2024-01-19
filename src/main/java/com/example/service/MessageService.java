@@ -18,7 +18,6 @@ import jdk.jfr.Timestamp;
 public class MessageService {
 
     private MessageRepository messageRepository;
-    private AccountRepository accountRepositry;
 
     @Autowired
     public MessageService(MessageRepository messageRepository) {
@@ -28,19 +27,20 @@ public class MessageService {
     /**
      * ## 3: Our API should be able to process the creation of new messages.
      * 
-     * As a user, I should be able to submit a new post on the endpoint POST localhost:8080/messages. The request body will contain a JSON representation of a message, which should be persisted to the database, but will not contain a message_id.
-
-    - The creation of the message will be successful if and only if the message_text is not blank, is not over 255 characters, 
-    and posted_by refers to a real, existing user. If successful, the response body should contain a JSON of the message, including its message_id. The response status should be 200, which is the default. The new message should be persisted to the database.
-    - If the creation of the message is not successful, the response status should be 400. (Client error)
+     * The creation of the message will be successful if and only if the message_text is not blank, 
+     * is not over 255 characters, and posted_by refers to a real, existing user. 
+     * 
+     * @param message The message to insert into the database, no message_id
+     * @return Message The saved message with message_id
+     * @throws InvalidInputException if the message fields do not meet requirements
     */
     public Message postMessage(Message message) throws InvalidInputException{
-        //TODO
         if(message != null && message.getMessage_text() != null && message.getPosted_by() != null
             && message.getMessage_text().length() <= 255 && message.getMessage_text().length() > 0) 
         {
+            // throws RuntimeException on insert if posted_by does not exist as an account_id in account tbl.
+            // TODO should this explicitly check if the posted_by account exists?  currently it works as is.
             Message newMessage = messageRepository.save(message);
-            System.out.println(newMessage);
             return newMessage;
         }
         else { 
@@ -51,29 +51,21 @@ public class MessageService {
     /**
      * ## 4: Our API should be able to retrieve all messages.
      * 
-     * As a user, I should be able to submit a GET request on the endpoint GET localhost:8080/messages.
-
-    - The response body should contain a JSON representation of a list containing all messages retrieved from the database. It is expected for the list to simply be empty if there are no messages. The response status should always be 200, which is the default.
-    */
+     * @return List<Messages> a list containing all messages retrieved from the database. 
+     *                        It is expected for the list to simply be empty if there are no messages. 
+     */
     public List<Message> getMesssages() {
-        //TODO
-        //List<Message> messages = new ArrayList<>();
-        //messages.add(new Message(Integer.valueOf(1), "text", Long.valueOf(3000)));
         return messageRepository.findAll();
     }
 
     /**
      * ## 5: Our API should be able to retrieve a message by its ID.
-
-    As a user, I should be able to submit a GET request on the endpoint GET localhost:8080/messages/{message_id}.
-
-    - The response body should contain a JSON representation of the message identified by the message_id. It is expected for 
-    the response body to simply be empty if there is no such message. The response status should always be 200, which is the default.
-
-    */
+     * 
+     * @param message_id message identifier
+     * @return Message The identified message retrieved from the database.  Null if does not exist.
+     */
     public Message getMessage(int message_id) {
-        //TODO
-        Optional<Message> messageO = messageRepository.findById(message_id);
+          Optional<Message> messageO = messageRepository.findById(message_id);
         if(messageO.isPresent()) {
             return messageO.get();
         }
@@ -85,16 +77,11 @@ public class MessageService {
 
     /**
      * ## 6: Our API should be able to delete a message identified by a message ID.
-
-    As a User, I should be able to submit a DELETE request on the endpoint DELETE localhost:8080/messages/{message_id}.
-
-    - The deletion of an existing message should remove an existing message from the database. If the message existed,
-    the response body should contain the number of rows updated (1). The response status should be 200, which is the default.
-    - If the message did not exist, the response status should be 200, but the response body should be empty. This is because the DELETE verb is intended to be idempotent, ie, multiple calls to the DELETE endpoint should respond with the same type of response.
-
-    */
+     * 
+     * @param message_id message identifier
+     * @return Integer number of rows updated (if message deleted (1) or (0) if no record existed)
+     */
     public Integer deleteMessage(Integer message_id) {
-        // TODO
         if(messageRepository.existsById(message_id)) {
             messageRepository.deleteById(message_id);
             return 1;
@@ -111,15 +98,14 @@ public class MessageService {
      * @param message_id
      * @param message_text
      * @return Integer the number of rows updated (0 or 1)
+     * @throws InvalidInputException if the message_id does not exist or the message_text does not
+     *         meed requirements.
      */
     public Integer updateMessage(Integer message_id, String message_text) throws InvalidInputException {
-        //TODO
-        System.out.println("^^^^^^^^^^^^^ message_text: " + message_text + "length: " + message_text.length());
         Message message = messageRepository.getById(message_id);
         if(message != null && message_text != null && message_text.length() <= 255 && message_text.length() > 0) {
             message.setMessage_text(message_text);
             messageRepository.save(message);
-            System.out.print("update message: " + message);
             return Integer.valueOf(1);
         }
         else {
@@ -129,14 +115,11 @@ public class MessageService {
 
     /**
      * ## 8: Our API should be able to retrieve all messages written by a particular user.
-
-    As a user, I should be able to submit a GET request on the endpoint GET localhost:8080/accounts/{account_id}/messages.
-
-    - The response body should contain a JSON representation of a list containing all messages posted by a particular user, which is retrieved from the database. It is expected for the list to simply be empty if there are no messages. The response status should always be 200, which is the default.
-
-    */
+     * 
+     * @param account_id unique identifier for accounts
+     * @return List<Messages> all messages posted by the identified account, empty if none exist.
+     */
     public List<Message> getAccountMessages(int account_id) {
-        //TODO
         List<Message> messages = messageRepository.findAllMessagesByPostedBy(account_id);
         return messages;
     }

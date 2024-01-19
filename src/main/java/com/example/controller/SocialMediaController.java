@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.websocket.server.PathParam;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -129,12 +128,11 @@ public class SocialMediaController {
      * 
      * @return ResponseEntity
      * - The response body should contain a JSON representation of a list containing all messages retrieved from the database. 
-     * - It is expected for the list to simply be empty if there are no messages. T
-     * The response status should always be 200, which is the default.
+     * - It is expected for the list to simply be empty if there are no messages. 
+     *   The response status should always be 200, which is the default.
      */
     @GetMapping(value="/messages")
     public @ResponseBody ResponseEntity<List<Message>> getMesssages() {
-        //TODO
         List<Message> messages = messageService.getMesssages();
         return ResponseEntity.status(200).body(messages);
     }
@@ -151,13 +149,14 @@ public class SocialMediaController {
      */
     @GetMapping(value="/messages/{message_id}")
     public @ResponseBody ResponseEntity<Message> getMessage(@PathVariable int message_id) {
-        //TODO
         Message newMessage = messageService.getMessage(message_id);
-        
-        return ResponseEntity.status(200).body(newMessage);
+        if(newMessage != null ) {
+            return ResponseEntity.status(200).body(newMessage);
+        } else {
+            return ResponseEntity.status(200).build();
+        }
     }
     
-
     /**
      * Delete a message identified by a message ID.
      * 
@@ -197,7 +196,7 @@ public class SocialMediaController {
      * - If the update of the message is not successful for any reason, the response status should be 400. (Client error)
      */
     @PatchMapping(value="/messages/{message_id}") 
-    public @ResponseBody ResponseEntity<Integer> updateMessage(@PathVariable Integer message_id, @RequestBody Map message_text) {
+    public @ResponseBody ResponseEntity<Integer> updateMessage(@PathVariable Integer message_id, @RequestBody Map<String,String> message_text) {
         String text = null;
         if(message_text != null) {
             text = (String) message_text.get("message_text");
